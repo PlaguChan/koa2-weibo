@@ -8,12 +8,22 @@ const logger = require('koa-logger');
 const session = require('koa-generic-session');
 const redisStore = require('koa-redis');
 const { REDIS_CONF } = require('./conf/db');
+const { isProd } = require('./utils/env');
 
+// router导入
 const index = require('./routes/index');
 const users = require('./routes/users');
+const errorRouter = require('./routes/view/error');
 
 // error handler错误处理（客户端）
-onerror(app);
+let onerrorConf = {};
+if (isProd) {
+    onerrorConf = {
+        redirect: '/string', // 遇到错误时自动跳转到/error页面
+        // 重定向次数问题可能是route路径未完成导致跳转路径循环，修改为redirect: '/'或'/string'时均不报错
+    };
+}
+onerror(app, onerrorConf);
 
 app.test = 'hello world';
 
@@ -61,10 +71,12 @@ app.use(
 // routes注册路由，见routes文件夹
 app.use(index.routes(), index.allowedMethods());
 app.use(users.routes(), users.allowedMethods());
+app.use(errorRouter.routes(), errorRouter.allowedMethods());
+// 404的*可以匹配所有路由，需要放在最下面注册
 
 // error-handling错误处理（控制台）
 app.on('error', (err, ctx) => {
-    console.error('server error', err, ctx);
+    console.error('服务器错误', err, ctx);
 });
 
 module.exports = app;

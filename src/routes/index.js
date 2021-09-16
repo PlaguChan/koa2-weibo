@@ -4,6 +4,7 @@ router.get('/', async (ctx, next) => {
     // console.log("before debugger");
     // debugger;
     // console.log("after debugger");
+    // inspect调试
     await ctx.render('index', {
         title: 'Hello Koa 2!',
         isMe: true,
@@ -43,6 +44,9 @@ router.get('/json', async (ctx, next) => {
     //     session.viewNum = 0;
     // }
     // session.viewNum++;
+
+    // throw error;
+
     ctx.body = {
         title: 'koa2 json',
         // viewNum: session.viewNum,

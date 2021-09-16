@@ -9,7 +9,7 @@ const conf = {
     dialect: 'mysql',
 };
 
-// 测试环境时不打印
+// 测试环境时不打印sql语句
 if (isTest) {
     conf.logging = () => {};
 }

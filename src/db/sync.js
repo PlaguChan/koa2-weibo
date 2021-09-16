@@ -1,3 +1,6 @@
+/**
+ * sequelize同步
+ */
 const seq = require('./seq');
 // require("./model");
 
@@ -11,7 +14,7 @@ seq.authenticate()
     });
 
 seq.sync({
-    froce: true, // 每次同步前清空表的内容
+    froce: true, // 每次同步前清空表的内容，修改时删除
 }).then(() => {
     console.log('同步成功');
     process.exit();
