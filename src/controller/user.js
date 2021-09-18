@@ -3,9 +3,9 @@
  * 需要等待service返回数据，故是异步函数
  */
 
-const { getUserInfo } = require('../services/user');
+const { getUserInfo, createUser } = require('../services/user');
 const { SuccessModel, ErrorModel } = require('../model/Res');
-const { registerUserNameNotExist } = require('../model/ErrorInfo');
+const { registerUserNameNotExist, registerFailInfo } = require('../model/ErrorInfo');
 
 /**
  *
@@ -23,6 +23,31 @@ async function isExist(userName) {
     }
 }
 
+/**
+ *
+ * @param {Object} param0 用户注册信息
+ */
+async function register({ userName, password, gender }) {
+    const userInfo = await getUserInfo(userName);
+    if (userInfo) {
+        // 用户名存在
+        return new ErrorModel(registerFailInfo);
+    }
+    try {
+        await createUser({
+            userName,
+            password,
+            gender,
+        });
+        return new SuccessModel();
+    } catch (err) {
+        // 打印错误信息和错误栈（讲解错误日志时再详细解释）
+        console.error(err.message, err.stack);
+        return new ErrorModel(registerFailInfo);
+    }
+}
+
 module.exports = {
     isExist,
+    register,
 };
