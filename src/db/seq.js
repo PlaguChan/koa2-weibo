@@ -1,6 +1,9 @@
+/**
+ * @description 连接
+ */
 const Sequelize = require('sequelize');
 const { MYSQL_CONF } = require('../conf/db');
-const { isProd } = require('../utils/env');
+const { isProd, isTest } = require('../utils/env');
 // 引用
 
 const { host, user, password, database } = MYSQL_CONF;
@@ -36,4 +39,4 @@ seq.authenticate()
     });
 
 module.exports = seq;
-// 输出已连接到mytest数据库的实例
+// 输出已连接到数据库的实例

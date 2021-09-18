@@ -20,8 +20,8 @@ let MYSQL_CONF = {
     user: 'root',
     password: 'mysql123456',
     dialect: 'mysql',
-    port: '3306', // 默认
-    database: 'mytest',
+    port: '3306',
+    database: 'koa2-weibo',
 };
 
 // 线上（production）的配置(暂时照抄线下环境，以后改)
@@ -36,8 +36,8 @@ if (isProd) {
         user: 'root',
         password: 'mysql123456',
         dialect: 'mysql',
-        port: '3306', // 默认
-        database: 'mytest',
+        port: '3306',
+        database: 'koa2-weibo',
     };
 }
 

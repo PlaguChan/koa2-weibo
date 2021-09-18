@@ -1,27 +1,23 @@
 const router = require('koa-router')();
 
-router.get('/', async (ctx, next) => {
-    // console.log("before debugger");
-    // debugger;
-    // console.log("after debugger");
-    // inspect调试
+router.get('/i', async (ctx, next) => {
     await ctx.render('index', {
         title: 'Hello Koa 2!',
-        isMe: true,
-        blogList: [
-            {
-                id: 0,
-                name: 'zhangsan',
-            },
-            {
-                id: 1,
-                name: 'lisi',
-            },
-            {
-                id: 2,
-                name: 'wangwu',
-            },
-        ],
+        //     isMe: true,
+        //     blogList: [
+        //         {
+        //             id: 0,
+        //             name: 'zhangsan',
+        //         },
+        //         {
+        //             id: 1,
+        //             name: 'lisi',
+        //         },
+        //         {
+        //             id: 2,
+        //             name: 'wangwu',
+        //         },
+        //     ],
     });
 });
 

@@ -12,8 +12,9 @@ const { isProd } = require('./utils/env');
 
 // router导入
 const index = require('./routes/index');
-const users = require('./routes/users');
-const errorRouter = require('./routes/view/error');
+const userApiRouter = require('./routes/api/user');
+const userViewRouter = require('./routes/view/user');
+const errorViewRouter = require('./routes/view/error');
 
 // error handler错误处理（客户端）
 let onerrorConf = {};
@@ -70,8 +71,9 @@ app.use(
 
 // routes注册路由，见routes文件夹
 app.use(index.routes(), index.allowedMethods());
-app.use(users.routes(), users.allowedMethods());
-app.use(errorRouter.routes(), errorRouter.allowedMethods());
+app.use(userApiRouter.routes(), userApiRouter.allowedMethods());
+app.use(userViewRouter.routes(), userViewRouter.allowedMethods());
+app.use(errorViewRouter.routes(), errorViewRouter.allowedMethods());
 // 404的*可以匹配所有路由，需要放在最下面注册
 
 // error-handling错误处理（控制台）
