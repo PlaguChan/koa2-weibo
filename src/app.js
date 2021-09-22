@@ -9,6 +9,7 @@ const session = require('koa-generic-session');
 const redisStore = require('koa-redis');
 const { REDIS_CONF } = require('./conf/db');
 const { isProd } = require('./utils/env');
+const { SESSION_SECRET_KEY } = require('./conf/secretKeys');
 
 // router导入
 const index = require('./routes/index');
@@ -51,7 +52,7 @@ app.use(
  * 需要在注册router前完成session注册
  */
 // 加密
-app.keys = ['UIGhlj9078_69dhk'];
+app.keys = [SESSION_SECRET_KEY]; // 数组
 // session配置
 app.use(
     session({

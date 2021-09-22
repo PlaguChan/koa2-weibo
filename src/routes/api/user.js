@@ -5,7 +5,7 @@
 const router = require('koa-router')();
 const {
     isExist,
-    //     register,
+    register,
     //     login,
     //     deleteCurUser,
     //     changeInfo,

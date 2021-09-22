@@ -5,7 +5,23 @@
 
 const { getUserInfo, createUser } = require('../services/user');
 const { SuccessModel, ErrorModel } = require('../model/Res');
-const { registerUserNameNotExist, registerFailInfo } = require('../model/ErrorInfo');
+const {
+    registerUserNameNotExistInfo,
+    // registerUserNameExistInfo,
+    registerFailInfo,
+    // loginFailInfo,
+    // loginCheckFailInfo,
+    // changePasswordFailInfo,
+    // uploadFileSizeFailInfo,
+    // changeInfoFailInfo,
+    // jsonSchemaFileInfo,
+    // deleteUserFailInfo,
+    // addFollowerFailInfo,
+    // deleteFollowerFailInfo,
+    // createBlogFailInfo,
+    // deleteBlogFailInfo,
+} = require('../model/ErrorInfo');
+const doCrypto = require('../utils/cryp');
 
 /**
  *
@@ -18,7 +34,7 @@ async function isExist(userName) {
         return new SuccessModel(userInfo);
         // {errno:0,data:{...}}
     } else {
-        return new ErrorModel(registerUserNameNotExist);
+        return new ErrorModel(registerUserNameNotExistInfo);
         // {errno:10003,message: '用户名不存在'}
     }
 }
@@ -36,7 +52,7 @@ async function register({ userName, password, gender }) {
     try {
         await createUser({
             userName,
-            password,
+            password: doCrypto(password),
             gender,
         });
         return new SuccessModel();
