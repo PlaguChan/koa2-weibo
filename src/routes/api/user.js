@@ -12,8 +12,8 @@ const {
     //     changePassword,
     //     logout,
 } = require('../../controller/user');
-// const userValidate = require('../../validator/user');
-// const { genValidator } = require('../../middlewares/validator');
+const userValidate = require('../../validator/user');
+const { genValidator } = require('../../middlewares/validator');
 // const { isTest } = require('../../utils/env');
 // const { loginCheck } = require('../../middlewares/loginChecks');
 // const { getFollowers } = require('../../controller/user-relation');
@@ -21,7 +21,7 @@ const {
 router.prefix('/api/user');
 
 // 注册
-router.post('/register', async (ctx, next) => {
+router.post('/register', genValidator(userValidate), async (ctx, next) => {
     const { userName, password, gender } = ctx.request.body;
     ctx.body = await register({
         userName,
