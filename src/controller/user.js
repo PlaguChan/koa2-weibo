@@ -3,23 +3,17 @@
  * 需要等待service返回数据，故是异步函数
  */
 
-const { getUserInfo, createUser } = require('../services/user');
+const { getUserInfo, createUser, deleteUser } = require('../services/user');
 const { SuccessModel, ErrorModel } = require('../model/Res');
 const {
     registerUserNameNotExistInfo,
-    // registerUserNameExistInfo,
+    registerUserNameExistInfo,
     registerFailInfo,
-    // loginFailInfo,
+    loginFailInfo,
     // loginCheckFailInfo,
     // changePasswordFailInfo,
-    // uploadFileSizeFailInfo,
     // changeInfoFailInfo,
-    // jsonSchemaFileInfo,
-    // deleteUserFailInfo,
-    // addFollowerFailInfo,
-    // deleteFollowerFailInfo,
-    // createBlogFailInfo,
-    // deleteBlogFailInfo,
+    deleteUserFailInfo,
 } = require('../model/ErrorInfo');
 const doCrypto = require('../utils/cryp');
 
@@ -47,7 +41,7 @@ async function register({ userName, password, gender }) {
     const userInfo = await getUserInfo(userName);
     if (userInfo) {
         // 用户名存在
-        return new ErrorModel(registerFailInfo);
+        return new ErrorModel(registerUserNameExistInfo);
     }
     try {
         await createUser({
@@ -63,7 +57,42 @@ async function register({ userName, password, gender }) {
     }
 }
 
+/**
+ * @param {Object} ctx 登陆成功后用ctx.session.userInfo存储用户信息
+ * @param {string} userName 用户名
+ * @param {string} password 密码
+ */
+async function login(ctx, userName, password) {
+    const userInfo = await getUserInfo(userName, doCrypto(password));
+    if (!userInfo) {
+        // 用户不存在，登录失败
+        return new ErrorModel(loginFailInfo);
+    }
+    // 用户存在，登陆成功
+    if (ctx.session.userInfo == null) {
+        ctx.session.userInfo = userInfo;
+    }
+    return new SuccessModel();
+}
+
+/**
+ * 删除当前用户
+ * @param {string} userName
+ * 用户名唯一，可以直接用用户名进行删除操作
+ */
+async function deleteCurUser(userName) {
+    const result = await deleteUser(userName);
+    if (result) {
+        // 删除成功
+        return new SuccessModel();
+    }
+    // 删除失败
+    return new ErrorModel(deleteUserFailInfo);
+}
+
 module.exports = {
     isExist,
     register,
+    login,
+    deleteCurUser,
 };

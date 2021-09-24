@@ -1,6 +1,6 @@
 /**
  * @description 自定义json-schema中间件
- * @description 实现信息校验功能
+ * @description 实现综合各种信息校验函数的功能
  */
 
 const { ErrorModel } = require('../model/Res');
@@ -11,13 +11,13 @@ const { jsonSchemaFileInfo } = require('../model/ErrorInfo');
  * @param {function} userValidate 各种验证函数
  * @returns
  */
-function genValidator(validateFunction) {
+function genValidator(validateFn) {
     /**
      *定义中间件：一个异步的校验函数
      */
     async function validator(ctx, next) {
         const data = ctx.request.body;
-        const error = validateFunction(data);
+        const error = validateFn(data);
         if (error) {
             ctx.body = new ErrorModel(jsonSchemaFileInfo);
             return;
