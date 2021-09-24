@@ -3,16 +3,15 @@
  * 需要等待service返回数据，故是异步函数
  */
 
-const { getUserInfo, createUser, deleteUser } = require('../services/user');
+const { getUserInfo, createUser, deleteUser, updateUser } = require('../services/user');
 const { SuccessModel, ErrorModel } = require('../model/Res');
 const {
     registerUserNameNotExistInfo,
     registerUserNameExistInfo,
     registerFailInfo,
     loginFailInfo,
-    // loginCheckFailInfo,
-    // changePasswordFailInfo,
-    // changeInfoFailInfo,
+    changePasswordFailInfo,
+    changeInfoFailInfo,
     deleteUserFailInfo,
 } = require('../model/ErrorInfo');
 const doCrypto = require('../utils/cryp');
@@ -90,9 +89,76 @@ async function deleteCurUser(userName) {
     return new ErrorModel(deleteUserFailInfo);
 }
 
+/**
+ * 修改用户信息
+ * @param {Object} ctx
+ * @param {string} nickName
+ * @param {string} city
+ * @param {string} picture
+ */
+async function changeInfo(ctx, { nickName, city, picture }) {
+    const { userName } = ctx.session.userInfo;
+    if (!nickName) {
+        nickName = userName;
+    }
+    const result = await updateUser(
+        {
+            newNickName: nickName,
+            newCity: city,
+            newPicture: picture,
+        },
+        { userName } // 必要查询条件
+    );
+    if (result) {
+        // 数据库更新成功，session也一并更新
+        // 修改ctx.session.userInfo（assign覆写同名属性）
+        Object.assign(ctx.session.userInfo, {
+            nickName,
+            city,
+            picture,
+        });
+        // 返回
+        return new SuccessModel();
+    }
+    // 更新失败
+    return new ErrorModel(changeInfoFailInfo);
+}
+
+/**
+ * 修改密码
+ * @param {string} userName
+ * @param {string} password
+ * @param {string} newPassword
+ */
+async function changePassword(userName, password, newPassword) {
+    const result = await updateUser(
+        {
+            newPassword: doCrypto(newPassword),
+        },
+        { userName, password: doCrypto(password) } // 查询条件
+    );
+    if (result) {
+        // 修改成功
+        return new SuccessModel();
+    }
+    return new ErrorModel(changePasswordFailInfo);
+}
+
+/**
+ * 退出登录
+ * @param {Object} ctx
+ */
+async function logout(ctx) {
+    delete ctx.session.userInfo;
+    return new SuccessModel();
+}
+
 module.exports = {
     isExist,
     register,
     login,
     deleteCurUser,
+    changeInfo,
+    changePassword,
+    logout,
 };

@@ -21,17 +21,17 @@ async function getUserInfo(userName, password) {
         Object.assign(whereOpt, { password });
         // assign方法参数需要是对象
     }
-    const result = await User.findOne({
+    const res = await User.findOne({
         attributes: ['id', 'userName', 'nickName', 'gender', 'city', 'picture'],
         where: whereOpt,
     });
-    if (result == null) {
+    if (res == null) {
         // 没有查到返回空
-        return result;
+        return res;
     }
     // 对可能为空的头像数据进行格式化处理
-    const formatResult = formatUser(result.dataValues);
-    return formatResult; // 查到返回数据
+    const formatRes = formatUser(res.dataValues);
+    return formatRes; // 查到返回数据
 }
 
 /**
@@ -47,25 +47,68 @@ async function createUser({ userName, password, gender = 3, nickName }) {
         password,
         gender,
         nickName: nickName ? nickName : userName,
-        // 注册时可以不设置昵称
+        // 注册时可以不设置昵称和性别
     });
-    return result.dataValues;
+    const data = result.dataValues;
+    // // 自己关注自己（为了方便首页获取数据）
+    // addFollower(data.id, data.id)
+    return data;
 }
 
 /**
- *
+ * 删除用户
  * @param {string} userName
  */
 async function deleteUser(userName) {
     const result = await User.destroy({
-        where: { userName },
+        where: {
+            userName,
+        },
     });
     // result返回的是删除数据的行数，大于0代表删除成功
     return result > 0;
+}
+
+/**
+ * 更新用户信息（用户名和性别不可修改）
+ * @param {Object} param0 要修改的内容 { newPassword, newNickName, newPicture, newCity }
+ * @param {Object} param1 查询条件 { userName, password }
+ */
+async function updateUser({ newPassword, newNickName, newPicture, newCity }, { userName, password }) {
+    // 拼接修改内容
+    const updateData = {};
+    if (newPassword) {
+        updateData.password = newPassword;
+    }
+    if (newNickName) {
+        updateData.nickName = newNickName;
+    }
+    if (newPicture) {
+        updateData.picture = newPicture;
+    }
+    if (newCity) {
+        updateData.city = newCity;
+    }
+
+    // 拼接查询条件
+    const whereData = {
+        userName,
+    };
+    if (password) {
+        whereData.password = password;
+    }
+
+    // 执行修改
+    const result = await User.update(updateData, {
+        where: whereData, // 查询条件
+    });
+    return result[0] > 0;
+    // 修改的行数（查询条件为不可重复的用户名，只会有一项）
 }
 
 module.exports = {
     getUserInfo,
     createUser,
     deleteUser,
+    updateUser,
 };
